@@ -1,14 +1,24 @@
-import java.util.Arrays;
-import java.util.List;
-
+// Burger.java
 public class Burger extends Makanan {
-    public Burger() {
-        // super(nama, hargaJual, waktuMasak, biayaProduksi)
-        super("Burger", 25000, 10, 12000); // Misal biaya modal burger 12rb
+    private boolean extraKeju;
+
+    // overloading constructor (contoh overloading)
+    public Burger(String nama, double harga) {
+        this(nama, harga, false);
+    }
+
+    public Burger(String nama, double harga, boolean extraKeju) {
+        super(nama, harga + (extraKeju ? 5000 : 0));
+        this.extraKeju = extraKeju;
     }
 
     @Override
-    public List<String> getBahan() {
-        return Arrays.asList("Roti", "Daging", "Sayur");
+    public String deskripsi() {
+        return getNama() + (extraKeju ? " dengan ekstra keju" : "");
+    }
+
+    // contoh method overloading: membuat string untuk pesanan
+    public String buat(int jumlah) {
+        return "Membuat " + jumlah + "x " + deskripsi();
     }
 }

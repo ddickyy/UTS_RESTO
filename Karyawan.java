@@ -1,17 +1,32 @@
-// Abstract class sebagai blueprint untuk semua jenis karyawan
+// Karyawan.java
 public abstract class Karyawan {
-    protected String nama;
-    protected String skill;
+    private String nama;
+    private String id;
+    private double gaji;
 
-    public Karyawan(String nama, String skill) {
+    public Karyawan(String id, String nama, double gaji) {
+        this.id = id;
         this.nama = nama;
-        this.skill = skill;
+        this.gaji = gaji;
     }
-    
+
     public String getNama() {
         return nama;
     }
 
-    // Metode abstract, setiap jenis karyawan punya cara kerja yang berbeda
-    public abstract void bekerja();
+    public String getId() {
+        return id;
+    }
+
+    public double getGaji() {
+        return gaji;
+    }
+
+    // setiap karyawan punya tugas kerja yang spesifik
+    public abstract void kerja();
+
+    @Override
+    public String toString() {
+        return String.format("%s (%s) - gaji: Rp %.0f", nama, id, gaji);
+    }
 }
