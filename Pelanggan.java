@@ -1,21 +1,27 @@
+// Pelanggan.java
 public class Pelanggan {
     private String nama;
-    private int tingkatKesabaran; // misal: 1-10
+    private double uang;
 
-    public Pelanggan(String nama, int tingkatKesabaran) {
+    public Pelanggan(String nama, double uang) {
         this.nama = nama;
-        this.tingkatKesabaran = tingkatKesabaran;
+        this.uang = uang;
     }
 
     public String getNama() {
         return nama;
     }
 
-    public void kurangiKesabaran() {
-        this.tingkatKesabaran--;
+    public double getUang() {
+        return uang;
     }
-    
-    public boolean apakahSabar() {
-        return tingkatKesabaran > 0;
+
+    public void kurangiUang(double jumlah) {
+        this.uang -= jumlah;
+    }
+
+    @Override
+    public String toString() {
+        return nama + " (Rp " + (int) uang + ")";
     }
 }

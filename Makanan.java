@@ -1,27 +1,15 @@
-import java.util.ArrayList;
-import java.util.List;
+// Makanan.java
+public abstract class Makanan implements DapatDiNilai {
+    private String nama;
+    private double harga;
+    private int totalRating = 0;
+    private int jumlahRating = 0;
 
-public abstract class Makanan {
-    protected String nama;
-    protected double harga;
-    protected int waktuMasak;
-    protected double biayaProduksi; // <-- ATRIBUT BARU: Biaya modal
-
-    private List<Integer> daftarRating = new ArrayList<>();
-
-    // Ubah constructor untuk menerima biayaProduksi
-    public Makanan(String nama, double harga, int waktuMasak, double biayaProduksi) {
+    public Makanan(String nama, double harga) {
         this.nama = nama;
         this.harga = harga;
-        this.waktuMasak = waktuMasak;
-        this.biayaProduksi = biayaProduksi; // <-- Inisialisasi biaya
     }
-    
-    // Metode getter untuk biaya produksi
-    public double getBiayaProduksi() {
-        return biayaProduksi;
-    }
-    
+
     public String getNama() {
         return nama;
     }
@@ -30,25 +18,26 @@ public abstract class Makanan {
         return harga;
     }
 
-    public abstract List<String> getBahan();
+    // subclass dapat override untuk detail pembuatan
+    public abstract String deskripsi();
 
-    public void tambahRating(int rating) {
-        this.daftarRating.add(rating);
-        System.out.println("Terima kasih! Rating " + rating + " telah diberikan untuk " + this.nama);
+    // implementasi interface: menghitung rata-rata rating
+    @Override
+    public double beriRating(int rating) {
+        if (rating < 1) rating = 1;
+        if (rating > 5) rating = 5;
+        totalRating += rating;
+        jumlahRating++;
+        return getRataRataRating();
     }
-    
+
     public double getRataRataRating() {
-        if (daftarRating.isEmpty()) return 0.0;
-        double total = 0;
-        for (int rating : daftarRating) total += rating;
-        return total / daftarRating.size();
+        if (jumlahRating == 0) return 0.0;
+        return (double) totalRating / jumlahRating;
     }
-
 
     @Override
     public String toString() {
-        return nama + " (Rp" + harga + ")";
+        return String.format("%s (Rp %.0f) - rating: %.2f", nama, harga, getRataRataRating());
     }
-
-    
 }

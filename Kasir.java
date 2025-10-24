@@ -1,16 +1,29 @@
+// Kasir.java
 public class Kasir extends Karyawan {
-    public Kasir(String nama) {
-        super(nama, "Melayani Pelanggan");
+
+    public Kasir(String id, String nama, double gaji) {
+        super(id, nama, gaji);
     }
 
-    // Penerapan Overriding
+    // overriding
     @Override
-    public void bekerja() {
-        System.out.println("Kasir " + nama + " siap di konter untuk melayani pelanggan.");
+    public void kerja() {
+        System.out.println(getNama() + " sedang melayani kasir.");
     }
 
-    public Pesanan terimaPesanan(Pelanggan pelanggan, Makanan makanan) {
-        System.out.println(nama + " menerima pesanan dari " + pelanggan.getNama() + ": 1 " + makanan.getNama());
-        return new Pesanan(pelanggan, makanan);
+    // proses pembayaran sederhana
+    public boolean prosesPembayaran(Pelanggan p, Pesanan pesanan, Restoran restoran) {
+        double total = pesanan.hitungTotal();
+        System.out.printf("%s membayar Rp %.0f untuk pesanan.\n", p.getNama(), total);
+        if (p.getUang() >= total) {
+            p.kurangiUang(total);
+            restoran.tambahKeuangan(total);
+            pesanan.selesaikan();
+            System.out.println("Pembayaran berhasil.");
+            return true;
+        } else {
+            System.out.println("Uang tidak cukup. Pembayaran gagal.");
+            return false;
+        }
     }
 }

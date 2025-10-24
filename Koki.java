@@ -1,43 +1,23 @@
-public class Koki extends Karyawan implements DapatDiNilai {
-    private int ratingMemasak = 0;
+// Koki.java
+public class Koki extends Karyawan {
 
-    public Koki(String nama) {
-        super(nama, "Memasak");
+    public Koki(String id, String nama, double gaji) {
+        super(id, nama, gaji);
     }
 
-    // Penerapan Overriding dari abstract method di kelas Karyawan
+    // overriding dari Karyawan
     @Override
-    public void bekerja() {
-        System.out.println("Koki " + nama + " sedang menyiapkan pesanan di dapur.");
+    public void kerja() {
+        System.out.println(getNama() + " sedang memasak di dapur.");
     }
 
-    // Metode dasar
-    public void masak(Makanan makanan) {
-        System.out.println(nama + " mulai memasak " + makanan.getNama() + ".");
-        // Simulasi waktu memasak
-        try {
-            Thread.sleep(makanan.waktuMasak * 100); // Percepat simulasi
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("-> " + makanan.getNama() + " selesai dimasak!");
+    // polymorphism: menerima Makanan abstrak
+    public void siapkan(Makanan makanan) {
+        System.out.println(getNama() + " menyiapkan: " + makanan.deskripsi());
     }
 
-    // Penerapan Overloading: nama method sama, parameter berbeda
-    public void masak(Makanan makanan, String instruksiKhusus) {
-        System.out.println(nama + " mulai memasak " + makanan.getNama() + " dengan instruksi khusus: '" + instruksiKhusus + "'.");
-        try {
-            Thread.sleep(makanan.waktuMasak * 100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("-> " + makanan.getNama() + " (custom) selesai dimasak!");
-    }
-
-    // Penerapan implementasi dari interface DapatDiNilai
-    @Override
-    public void beriRating(int rating) {
-        this.ratingMemasak += rating;
-        System.out.println("Koki " + nama + " mendapatkan rating. Total rating sekarang: " + this.ratingMemasak);
+    // overloading: siapkan dengan jumlah
+    public void siapkan(Makanan makanan, int jumlah) {
+        System.out.println(getNama() + " menyiapkan: " + jumlah + "x " + makanan.deskripsi());
     }
 }

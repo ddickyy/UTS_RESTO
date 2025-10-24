@@ -1,95 +1,85 @@
-import java.util.List;
-import java.util.Random;
+// SimulasiGame.java
 import java.util.Scanner;
 
 public class SimulasiGame {
-    public static void main(String[] args) throws InterruptedException {
-        Scanner scanner = new Scanner(System.in);
-        Random random = new Random();
-        System.out.println("Selamat Datang di Game Simulasi Restoran Cepat Saji!");
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 
-        // Setup awal
-        Restoran restoran = new Restoran(500000); // Modal awal lebih realistis
-        restoran.tambahMenu(new Burger());
-        restoran.tambahMenu(new KentangGoreng());
-        restoran.tambahKaryawan(new Koki("Budi"));
-        Kasir kasir = new Kasir("Citra");
-        
-        int hari = 1;
-        boolean isGameRunning = true;
+        // Inisialisasi restoran
+        Restoran r = new Restoran("Restoran Kita", 1_000_000);
+        r.tambahMenu(new Burger("Burger Sederhana", 25000));
+        r.tambahMenu(new Burger("Burger Keju", 30000, true));
+        r.tambahMenu(new KentangGoreng("Normal", 12000));
 
-        while (isGameRunning) {
-            System.out.println("\n--- HARI KE-" + hari + " ---");
-            restoran.tampilkanStatus();
-            System.out.println("--- MENU MANAJER ---");
-            System.out.println("1. Mulai Hari Berikutnya (Simulasi)");
-            System.out.println("2. Tambah Stok Bahan");
-            System.out.println("3. Lihat Rating Makanan");
-            System.out.println("4. Keluar dari Game");
-            System.out.print("Pilih aksi (1-4): ");
+        Koki koki = new Koki("K1", "Andi (Koki)", 3_000_000);
+        Kasir kasir = new Kasir("C1", "Siti (Kasir)", 2_500_000);
+        r.tambahKaryawan(koki);
+        r.tambahKaryawan(kasir);
 
-            int pilihan = 0;
-            try {
-                pilihan = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Input tidak valid!");
-                continue;
-            }
+        // Buat pelanggan
+        System.out.print("Masukkan nama pelanggan: ");
+        String namaPelanggan = sc.nextLine();
+        Pelanggan pelanggan = new Pelanggan(namaPelanggan, 100_000);
 
-            switch (pilihan) {
+        Pesanan pesanan = new Pesanan(pelanggan);
+        boolean running = true;
+
+        while (running) {
+            System.out.println("\n=== MENU UTAMA ===");
+            System.out.println("1. Lihat Menu Makanan");
+            System.out.println("2. Tambah Pesanan");
+            System.out.println("3. Lihat Pesanan");
+            System.out.println("4. Proses Pembayaran");
+            System.out.println("5. Keluar");
+            System.out.print("Pilih (1-5): ");
+            int pilih = sc.nextInt();
+            sc.nextLine(); // buang newline
+
+            switch (pilih) {
                 case 1:
-                    // === SIMULASI SATU HARI DIMULAI ===
-                    System.out.println("\nRestoran dibuka untuk hari ke-" + hari + "...");
-                    
-                    // Jumlah pelanggan potensial bergantung pada reputasi
-                    // Reputasi 100 -> maks 10 pelanggan, Reputasi 50 -> maks 5 pelanggan
-                    int maksPelanggan = restoran.getReputasi() / 10;
-                    int jumlahPelangganDatang = random.nextInt(maksPelanggan + 1);
-
-                    System.out.println("Berdasarkan reputasi, " + jumlahPelangganDatang + " pelanggan akan datang hari ini.");
-                    Thread.sleep(2000);
-
-                    if (jumlahPelangganDatang == 0) {
-                        System.out.println("Sayang sekali, tidak ada pelanggan yang datang hari ini.");
+                    System.out.println("\n=== DAFTAR MENU ===");
+                    int i = 1;
+                    for (Makanan m : r.getMenu()) {
+                        System.out.println(i++ + ". " + m);
                     }
-
-                    for (int i = 0; i < jumlahPelangganDatang; i++) {
-                        System.out.println("\n<<<<< Pelanggan ke-" + (i + 1) + " Datang >>>>>");
-                        Pelanggan pelanggan = new Pelanggan("Pelanggan " + (i + 1), 5); // Kesabaran awal
-                        
-                        List<Makanan> menu = restoran.getMenu();
-                        Makanan makananDipesan = menu.get(random.nextInt(menu.size()));
-
-                        Pesanan pesanan = kasir.terimaPesanan(pelanggan, makananDipesan);
-                        restoran.prosesPesanan(pesanan);
-                        Thread.sleep(1000);
-                    }
-                    
-                    hari++; // Lanjut ke hari berikutnya
                     break;
 
                 case 2:
-                    System.out.print("Masukkan nama bahan (Roti, Daging, Sayur, Kentang, Minyak): ");
-                    String bahan = scanner.nextLine();
-                    System.out.print("Masukkan jumlah: ");
-                    int jumlah = Integer.parseInt(scanner.nextLine());
-                    restoran.tambahStok(bahan, jumlah);
+                    System.out.println("\nPilih nomor menu yang ingin dipesan:");
+                    int no = sc.nextInt();
+                    sc.nextLine();
+                    if (no < 1 || no > r.getMenu().size()) {
+                        System.out.println("Nomor menu tidak valid.");
+                    } else {
+                        Makanan m = r.getMenu().get(no - 1);
+                        pesanan.tambah(m);
+                        System.out.println(m.getNama() + " telah ditambahkan ke pesanan.");
+                    }
                     break;
 
                 case 3:
-                    restoran.tampilkanRatingMenu();
+                    System.out.println("\n=== PESANAN SAAT INI ===");
+                    System.out.println(pesanan);
                     break;
 
                 case 4:
-                    isGameRunning = false;
+                    System.out.println("\n=== PEMBAYARAN ===");
+                    if (pesanan.getDaftar().isEmpty()) {
+                        System.out.println("Belum ada item dalam pesanan.");
+                    } else {
+                        r.prosesPesanan(pesanan);
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("Terima kasih telah berkunjung!");
+                    running = false;
                     break;
 
                 default:
-                    System.out.println("Pilihan tidak valid!");
+                    System.out.println("Pilihan tidak valid, coba lagi.");
                     break;
             }
         }
-        System.out.println("\nSIMULASI SELESAI. Terima kasih telah bermain!");
-        scanner.close();
     }
 }
