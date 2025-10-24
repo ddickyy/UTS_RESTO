@@ -3,7 +3,8 @@ import java.util.List;
 
 public class KentangGoreng extends Makanan {
     public KentangGoreng() {
-        super("Kentang Goreng", 15000, 5);
+        // super(nama, hargaJual, waktuMasak, biayaProduksi)
+        super("Kentang Goreng", 15000, 5, 6000); // Misal biaya modal kentang 6rb
     }
 
     @Override
