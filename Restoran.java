@@ -34,6 +34,8 @@ public class Restoran {
 
     public List<Makanan> getMenu() {
         return menu;
+        // print menu
+        
     }
 
     public int getStok(Makanan m) {
@@ -113,6 +115,16 @@ public class Restoran {
         System.out.println("\n=== STOK MENU ===");
         for (Makanan m : menu) {
             System.out.printf("%s : %d porsi\n", m.getNama(), getStok(m));
+        }
+    }
+
+    public void tampilkanMakan() {
+        System.out.println("\n=== MENU ===");
+        int i = 1; // 1. Initialize a counter
+        for (Makanan m : menu) {
+            // 2. Print the counter along with the name
+            System.out.printf("%d. %s porsi\n", i, m.getNama());
+            i++; // 3. Increment the counter
         }
     }
 }
