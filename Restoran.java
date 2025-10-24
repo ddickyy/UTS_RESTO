@@ -1,8 +1,6 @@
+
 // Restoran.java
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Restoran {
     private String nama;
@@ -10,15 +8,15 @@ public class Restoran {
     private int reputasi;
     private List<Karyawan> daftarKaryawan = new ArrayList<>();
     private List<Makanan> menu = new ArrayList<>();
-    private Map<String, Integer> inventori = new HashMap<>();
+    private Map<Makanan, Integer> stokMenu = new HashMap<>();
 
     public Restoran(String nama, double modalAwal) {
         this.nama = nama;
         this.keuangan = modalAwal;
-        this.reputasi = 50; // awalan
+        this.reputasi = 50;
     }
 
-    // manajemen staff
+    // Manajemen karyawan
     public void tambahKaryawan(Karyawan k) {
         daftarKaryawan.add(k);
     }
@@ -27,70 +25,94 @@ public class Restoran {
         return daftarKaryawan;
     }
 
-    // manajemen menu
-    public void tambahMenu(Makanan m) {
+    // ======== MENU & STOK ========
+
+    public void tambahMenu(Makanan m, int stokAwal) {
         menu.add(m);
+        stokMenu.put(m, stokAwal);
     }
 
     public List<Makanan> getMenu() {
         return menu;
     }
 
-    // inventori sederhana
-    public void tambahInventori(String bahan, int qty) {
-        inventori.put(bahan, inventori.getOrDefault(bahan, 0) + qty);
+    public int getStok(Makanan m) {
+        return stokMenu.getOrDefault(m, 0);
     }
 
-    public int getStok(String bahan) {
-        return inventori.getOrDefault(bahan, 0);
+    public void tambahStok(Makanan m, int jumlah) {
+        stokMenu.put(m, getStok(m) + jumlah);
     }
 
-    // keuangan
+    public boolean kurangiStok(Makanan m, int jumlah) {
+        int sisa = getStok(m) - jumlah;
+        if (sisa < 0)
+            return false;
+        stokMenu.put(m, sisa);
+        return true;
+    }
+
     public double getKeuangan() {
         return keuangan;
     }
 
     public void tambahKeuangan(double jumlah) {
-        this.keuangan += jumlah;
+        keuangan += jumlah;
     }
 
     public void kurangiKeuangan(double jumlah) {
-        this.keuangan -= jumlah;
+        keuangan -= jumlah;
     }
 
-    // contoh proses pesanan: koki menyiapkan -> kasir memproses pembayaran
     public void prosesPesanan(Pesanan pesanan) {
-        // cari koki & kasir (contoh: ambil yang pertama)
         Koki koki = null;
         Kasir kasir = null;
         for (Karyawan k : daftarKaryawan) {
-            if (k instanceof Koki && koki == null) koki = (Koki) k;
-            if (k instanceof Kasir && kasir == null) kasir = (Kasir) k;
+            if (k instanceof Koki && koki == null)
+                koki = (Koki) k;
+            if (k instanceof Kasir && kasir == null)
+                kasir = (Kasir) k;
         }
 
         if (koki == null || kasir == null) {
-            System.out.println("Tidak ada staf cukup (koki/ kasir) untuk memproses pesanan.");
+            System.out.println("❌ Tidak ada staf lengkap (koki/kasir)!");
             return;
         }
 
-        // koki siapkan semua item
+        // Cek stok semua item sebelum diproses
         for (Makanan m : pesanan.getDaftar()) {
+            if (getStok(m) <= 0) {
+                System.out.println("⚠️ Stok habis untuk: " + m.getNama());
+                return;
+            }
+        }
+
+        // Kurangi stok
+        for (Makanan m : pesanan.getDaftar()) {
+            kurangiStok(m, 1);
             koki.siapkan(m);
         }
 
-        // kasir proses pembayaran
-        boolean bayar = kasir.prosesPembayaran(pesanan.getPelanggan(), pesanan, this);
-        if (bayar) {
-            // meningkatkan reputasi sedikit
-            reputasi += 1;
+        // Kasir memproses pembayaran
+        boolean berhasil = kasir.prosesPembayaran(pesanan.getPelanggan(), pesanan, this);
+
+        if (berhasil) {
+            reputasi++;
         } else {
-            reputasi -= 1;
+            reputasi--;
         }
     }
 
     @Override
     public String toString() {
-        return String.format("%s - Keuangan: Rp %.0f - Reputasi: %d - Karyawan: %d - Menu: %d",
-                nama, keuangan, reputasi, daftarKaryawan.size(), menu.size());
+        return String.format("%s - Keuangan: Rp %.0f | Reputasi: %d | Menu: %d",
+                nama, keuangan, reputasi, menu.size());
+    }
+
+    public void tampilkanStok() {
+        System.out.println("\n=== STOK MENU ===");
+        for (Makanan m : menu) {
+            System.out.printf("%s : %d porsi\n", m.getNama(), getStok(m));
+        }
     }
 }
